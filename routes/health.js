@@ -1,4 +1,5 @@
 const express = require('express');
+const { getDevices, getDeviceSavings } = require('../utils/dataLoader');
 
 const router = express.Router();
 
@@ -6,6 +7,8 @@ const router = express.Router();
 router.get('/', (req, res) => {
   res.json({
     status: 'OK',
+    devices_loaded: getDevices().length,
+    savings_records: getDeviceSavings().length
   });
 });
 
