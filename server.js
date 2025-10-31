@@ -25,6 +25,8 @@ async function startServer() {
       console.log(`Server running on http://localhost:${PORT}`);
       console.log(`API endpoints:`);
       console.log(`  GET /api/health - Health check`);
+      console.log(`  GET /api/devices - List all devices`);
+      console.log(`  GET /api/devices/:id - Get device details`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
