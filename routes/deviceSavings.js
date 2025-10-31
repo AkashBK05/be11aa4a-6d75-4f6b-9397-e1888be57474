@@ -7,6 +7,9 @@ const router = express.Router();
 // Get device savings with optional date filtering
 router.get('/:id/savings', (req, res) => {
   const deviceId = parseInt(req.params.id);
+  if (isNaN(deviceId) || deviceId <= 0) {
+    return res.status(400).json({ error: 'Invalid device ID' });
+  }
   const { start_date, end_date, timezone } = req.query;
 
   const device = getDeviceById(deviceId);
