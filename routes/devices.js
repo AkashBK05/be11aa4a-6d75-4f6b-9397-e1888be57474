@@ -11,6 +11,9 @@ router.get('/', (req, res) => {
 // Get device by ID
 router.get('/:id', (req, res) => {
   const deviceId = parseInt(req.params.id);
+  if (isNaN(deviceId) || deviceId <= 0) {
+   return res.status(400).json({ error: 'Invalid device ID' });
+  }
   const device = getDeviceById(deviceId);
 
   if (!device) {
