@@ -4,13 +4,20 @@ const { getDeviceById, getDeviceSavingsById } = require('../utils/dataLoader');
 const router = express.Router();
 
 // Get monthly statistics for a device (average per month)
-router.get('/:id/stats/monthly', (req, res) => {
-    const deviceId = parseInt(req.params.id);
-
-    const device = getDeviceById(deviceId);
-    if (!device) {
-        return res.status(404).json({ error: 'Device not found' });
+ router.get('/:id/stats/monthly', (req, res) => {
+  try {
+     const deviceId = parseInt(req.params.id);
+    if (isNaN(deviceId) || deviceId <= 0) {
+      return res.status(400).json({ error: 'Invalid device ID' });
     }
+
+     const device = getDeviceById(deviceId);
+     if (!device) {
+         return res.status(404).json({ error: 'Device not found' });
+     }
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 
     const deviceData = getDeviceSavingsById(deviceId);
 
