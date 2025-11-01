@@ -10,21 +10,36 @@ function applyDateFilter(savings, startDate, endDate, timezone) {
     return savings;
   }
 
+  // Validate dates if provided
+  if (startDate && !moment.tz(startDate, timezone).isValid()) {
+    throw new Error("Invalid start_date format");
+  }
+  if (endDate && !moment.tz(endDate, timezone).isValid()) {
+    throw new Error("Invalid end_date format");
+  }
+
+  // Validate logical ordering
+  if (startDate && endDate) {
+    const start = moment.tz(startDate, timezone);
+    const end = moment.tz(endDate, timezone);
+    if (start.isAfter(end)) {
+      throw new Error("start_date must be before or equal to end_date");
+    }
+  }
+
   let filtered = savings;
 
-  if (startDate) {
-    const startMoment = moment.tz(startDate, timezone);
-    filtered = filtered.filter((s) =>
-      moment(s.device_timestamp).isSameOrAfter(startMoment)
-    );
-  }
+    if (startDate || endDate) {
+      const startMoment = startDate ? moment.tz(startDate, timezone) : null;
+      const endMoment = endDate ? moment.tz(endDate, timezone) : null;
 
-  if (endDate) {
-    const endMoment = moment.tz(endDate, timezone);
-    filtered = filtered.filter((s) =>
-      moment(s.device_timestamp).isSameOrBefore(endMoment)
-    );
-  }
+      filtered = filtered.filter((s) => {
+        const timestamp = moment(s.device_timestamp).tz(timezone);
+        if (startMoment && timestamp.isBefore(startMoment)) return false;
+        if (endMoment && timestamp.isAfter(endMoment)) return false;
+        return true;
+      });
+    }
 
   return filtered;
 }
@@ -53,7 +68,7 @@ router.get("/:id/savings", (req, res) => {
     deviceTimezone
   );
 
-  // Sort by device timestamp (local time)
+  // Sort by device timestamp
   filteredSavings.sort((a, b) => a.device_timestamp - b.device_timestamp);
 
   res.json({
@@ -127,8 +142,8 @@ router.get("/:id/savings/aggregated", (req, res) => {
   // Convert to array - use sums for aggregated intervals to show total savings per period
   const result = Object.values(grouped).map((group) => ({
     timestamp: group.timestamp,
-    carbon_saved: group.carbon_saved, // Use total sum, not average
-    fuel_saved: group.fuel_saved, // Use total sum, not average
+    carbon_saved: group.carbon_saved, 
+    fuel_saved: group.fuel_saved,
     count: group.count,
   }));
 
