@@ -57,16 +57,20 @@ router.get("/:id/savings", (req, res) => {
     return res.status(404).json({ error: "Device not found" });
   }
 
-  let filteredSavings = getDeviceSavingsById(deviceId);
+   let filteredSavings = getDeviceSavingsById(deviceId);
 
-  // Apply date filtering if provided
-  const deviceTimezone = timezone || device.timezone;
-  filteredSavings = applyDateFilter(
-    filteredSavings,
-    start_date,
-    end_date,
-    deviceTimezone
-  );
+   // Apply date filtering if provided
+   const deviceTimezone = timezone || device.timezone;
+  try {
+     filteredSavings = applyDateFilter(
+       filteredSavings,
+       start_date,
+       end_date,
+       deviceTimezone
+     );
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 
   // Sort by device timestamp
   filteredSavings.sort((a, b) => a.device_timestamp - b.device_timestamp);
@@ -91,16 +95,20 @@ router.get("/:id/savings/aggregated", (req, res) => {
     return res.status(404).json({ error: "Device not found" });
   }
 
-  let filteredSavings = getDeviceSavingsById(deviceId);
+   let filteredSavings = getDeviceSavingsById(deviceId);
 
-  // Apply date filtering
-  const deviceTimezone = timezone || device.timezone;
-  filteredSavings = applyDateFilter(
-    filteredSavings,
-    start_date,
-    end_date,
-    deviceTimezone
-  );
+   // Apply date filtering
+   const deviceTimezone = timezone || device.timezone;
+  try {
+     filteredSavings = applyDateFilter(
+       filteredSavings,
+       start_date,
+       end_date,
+       deviceTimezone
+     );
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
 
   // Group by interval (hour, day, etc.)
   const grouped = {};
