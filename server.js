@@ -29,6 +29,7 @@ async function startServer() {
       console.log(`  GET /api/devices/:id - Get device details`);
       console.log(`  GET /api/devices/:id/savings - Get device savings data`);
       console.log(`  GET /api/devices/:id/savings/aggregated - Get aggregated savings data`);
+      console.log(`  GET /api/devices/:id/stats/monthly - Get monthly statistics`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
